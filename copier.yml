@@ -1,0 +1,17 @@
+# Copier template configuration
+
+# Questions/variables for the template
+_subdirectory: template
+
+_exclude:
+  - "*.pyc"
+  - "__pycache__"
+  - ".git"
+  - ".pytest_cache"
+  - "*.egg-info"
+  - ".copier-answers.yml"
+
+_skip_if_exists:
+  - ".copier-answers.yml"
+
+_templates_suffix: .jinja
