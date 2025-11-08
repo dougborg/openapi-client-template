@@ -1,15 +1,71 @@
-[project]
-name = "{{ project_slug }}"
-version = "0.0.1"
-description = "A pythonic client for {{ api_service }}"
-readme = "README.md"
-authors = [ { name = "{{ author_name }}" } ]
-license = "{{ license }}"
-
-[tool.poetry.dependencies]
-python = "^{{ python_version }}"
-openapi-client-core = "^0.1.0"
-
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ project_slug }}"
+version = "0.0.1"
+description = "A pythonic client for {{ api_service }} API"
+readme = "README.md"
+requires-python = ">={{ min_python_version }}"
+license = { text = "{{ license }}" }
+authors = [
+    { name = "{{ author_name }}" }
+]
+keywords = ["openapi", "client", "{{ api_service }}"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: {{ min_python_version }}",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "openapi-client-core>=0.1.0",
+    {% if http_library_choice == "httpx" %}"httpx>=0.24.0",{% endif %}
+    {% if http_library_choice == "requests" %}"requests>=2.31.0",{% endif %}
+    {% if include_mcp %}"mcp>=0.1.0",{% endif %}
+    {% if include_cli %}"click>=8.1.0",{% endif %}
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+    "black>=23.0",
+    "pre-commit>=3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/{{ author_name }}/{{ project_slug }}"
+Repository = "https://github.com/{{ author_name }}/{{ project_slug }}"
+Issues = "https://github.com/{{ author_name }}/{{ project_slug }}/issues"
+
+{% if include_cli %}
+[project.scripts]
+{{ project_slug }} = "{{ package_name }}.cli:main"
+{% endif %}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py{{ min_python_version | replace('.', '') }}"
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = []
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.black]
+line-length = 100
+target-version = ["py{{ min_python_version | replace('.', '') }}"]

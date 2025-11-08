@@ -1,0 +1,55 @@
+# {{ project_name }} Documentation
+
+Welcome to the documentation for {{ project_name }}, a Python client for the {{ api_service }} API.
+
+## Installation
+
+```bash
+pip install {{ project_slug }}
+```
+
+## Quick Start
+
+```python
+from {{ package_name }} import Client
+
+# Initialize the client
+client = Client(api_key="your-api-key")
+
+# Make API calls
+# TODO: Add examples specific to {{ api_service }}
+```
+
+## Features
+
+- **Type-safe API client** with full type hints
+- **Automatic retries** with exponential backoff
+{% if internal_rate_limiter %}- **Rate limiting** to respect API quotas{% endif %}
+{% if include_mcp %}- **MCP support** for model context protocol integration{% endif %}
+{% if include_cli %}- **CLI interface** for common operations{% endif %}
+- **Comprehensive error handling**
+- **Pagination helpers** for list endpoints
+
+## Configuration
+
+Configuration options:
+- `api_key`: Your API key for authentication
+- `base_url`: API base URL (optional, defaults to official endpoint)
+- `timeout`: Request timeout in seconds (default: 30)
+{% if internal_rate_limiter %}- `rate_limit`: Maximum requests per second (default: based on API tier){% endif %}
+
+## API Reference
+
+See the [API Reference](api.md) for detailed information on all available methods.
+
+## Examples
+
+See the [examples/](../examples/) directory for more usage examples.
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+
+## License
+
+This project is licensed under the {{ license }} License - see the [LICENSE](../LICENSE) file for details.
