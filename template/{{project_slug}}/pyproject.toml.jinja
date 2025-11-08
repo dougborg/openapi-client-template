@@ -1,0 +1,15 @@
+[project]
+name = "{{ project_slug }}"
+version = "0.0.1"
+description = "A pythonic client for {{ api_service }}"
+readme = "README.md"
+authors = [ { name = "{{ author_name }}" } ]
+license = "{{ license }}"
+
+[tool.poetry.dependencies]
+python = "^{{ python_version }}"
+openapi-client-core = "^0.1.0"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"

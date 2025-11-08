@@ -1,0 +1,10 @@
+{
+  "project_name": "My OpenAPI Client",
+  "project_slug": "my-openapi-client",
+  "package_name": "my_openapi_client",
+  "api_service": "service",
+  "include_mcp": true,
+  "author_name": "dougborg",
+  "license": "MIT",
+  "python_version": "3.11"
+}
