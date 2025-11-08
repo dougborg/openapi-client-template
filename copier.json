@@ -4,7 +4,11 @@
   "package_name": "my_openapi_client",
   "api_service": "service",
   "include_mcp": true,
+  "include_cli": false,
+  "internal_rate_limiter": true,
+  "http_library_choice": "httpx",
   "author_name": "dougborg",
   "license": "MIT",
+  "min_python_version": "3.11",
   "python_version": "3.11"
 }
