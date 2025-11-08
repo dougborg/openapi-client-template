@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-\"\"\"Small helper to update an existing project using copier.
+"""Small helper to update an existing project using copier.
 
 Usage:
   # update a project that was created from this template:
   python scripts/sync-template.py /path/to/target --trust
-\"\"\"
+"""
 import sys
 import subprocess
 from pathlib import Path
@@ -13,8 +13,7 @@ def run_update(target: Path, trust: bool = False):
     args = ["copier", "update", str(Path(__file__).resolve().parents[1])]
     if trust:
         args.append("--trust")
-    args += ["--data", f'project_path={target}']
-    subprocess.run(args, check=True)
+    subprocess.run(args, cwd=target, check=True)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
