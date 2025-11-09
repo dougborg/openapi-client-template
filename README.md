@@ -6,6 +6,8 @@ A [Copier](https://copier.readthedocs.io/)-based template for bootstrapping cons
 
 This template provides:
 - **Reproducible project structure** for Python OpenAPI clients with modern PEP 621 packaging
+- **UV-powered development** with fast, reliable dependency management and lock files
+- **Modern build system** using Hatchling for streamlined packaging
 - **Shared runtime libraries** (openapi-client-core) for common concerns like retries, rate limiting, and pagination
 - **Easy template updates** using copier to keep multiple client repositories in sync
 - **Standard CI/CD workflows** to ensure quality and consistency across all generated clients
@@ -13,24 +15,44 @@ This template provides:
 
 ## Quick Start
 
+### Prerequisites
+
+Install [UV](https://docs.astral.sh/uv/) (recommended) for fast dependency management:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Or use pip if you prefer:
+
+```bash
+pip install uv
+```
+
 ### Creating a New Project
 
 1. Install Copier:
    ```bash
-   pip install copier
+   uv tool install copier
    ```
 
 2. Generate a new client project:
    ```bash
-   copier copy gh:dougborg/openapi-client-template my-api-client
+   uvx copier copy gh:dougborg/openapi-client-template my-api-client
    ```
 
 3. Follow the interactive prompts to configure your project, or provide values directly:
    ```bash
-   copier copy gh:dougborg/openapi-client-template my-api-client \
+   uvx copier copy gh:dougborg/openapi-client-template my-api-client \
      --data project_name="My API Client" \
      --data api_service="myservice" \
      --data include_mcp=true
+   ```
+
+4. Set up your new project:
+   ```bash
+   cd my-api-client
+   uv sync
    ```
 
 ### Updating an Existing Project
@@ -39,14 +61,46 @@ To pull in the latest template changes to an existing project created from this 
 
 1. Navigate to your client project directory
 2. Run:
+
    ```bash
-   copier update --trust
+   uvx copier update --trust
    ```
 
 Or use the provided sync script from the template repository:
+
 ```bash
 python scripts/sync-template.py /path/to/your-client-project --trust
 ```
+
+### Working on the Template Repository
+
+To contribute to this template:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/dougborg/openapi-client-template.git
+   cd openapi-client-template
+   ```
+
+2. Set up development environment:
+
+   ```bash
+   uv sync --all-extras
+   ```
+
+3. Run tests:
+
+   ```bash
+   uv run pytest
+   ```
+
+4. Lint and format code:
+
+   ```bash
+   uv run ruff check .
+   uv run ruff format .
+   ```
 
 ## Template Structure
 

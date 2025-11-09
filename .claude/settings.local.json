@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(cat:*)",
+      "Bash(black --check:*)",
+      "Bash(test:*)",
+      "Bash(git log:*)",
+      "Bash(ls:*)",
+      "Bash(ruff format:*)",
+      "Bash(ruff check:*)",
+      "Bash(uv lock:*)",
+      "Bash(uv run ruff check:*)",
+      "Bash(uv run ruff:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

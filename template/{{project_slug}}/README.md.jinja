@@ -1,11 +1,87 @@
 # {{ project_name }}
 
-Client for the {{ api_service }} API.
+A Python client for the {{ api_service }} API.
 
-Usage
-- Install from source: pip install -e .
-- See examples in examples/ and tests/
+## Installation
 
-Template notes
-- This project uses `openapi-client-core` for shared retry/pagination/rate-limiting.
-- Optional MCP support included when `include_mcp` is true.
+### From Source
+
+```bash
+git clone https://github.com/{{ author_name }}/{{ project_slug }}.git
+cd {{ project_slug }}
+uv sync
+```
+
+### For Development
+
+```bash
+# Clone and install with dev dependencies
+git clone https://github.com/{{ author_name }}/{{ project_slug }}.git
+cd {{ project_slug }}
+uv sync --all-extras
+```
+
+## Quick Start
+
+```python
+from {{ package_name }} import {{ api_service | title }}Client
+
+# Initialize the client
+client = {{ api_service | title }}Client()
+
+# Make API calls
+# TODO: Add examples specific to {{ api_service }}
+```
+
+## Development
+
+### Setup
+
+This project uses [UV](https://docs.astral.sh/uv/) for dependency management:
+
+```bash
+# Install UV
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Set up development environment
+uv sync --all-extras
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run with coverage
+uv run pytest --cov={{ package_name }} --cov-report=term
+```
+
+### Code Quality
+
+```bash
+# Lint code
+uv run ruff check .
+
+# Format code
+uv run ruff format .
+```
+
+## Project Structure
+
+- `src/{{ package_name }}/`: Main package code
+- `tests/`: Test suite
+- `docs/`: Documentation
+{% if include_cli %}- CLI available via `{{ project_slug }}` command{% endif %}
+
+## Features
+
+- Built on `openapi-client-core` for shared retry/pagination/rate-limiting
+- Comprehensive test coverage
+- Type hints throughout
+{% if include_mcp %}- MCP (Model Context Protocol) support{% endif %}
+{% if include_cli %}- Command-line interface{% endif %}
+
+## License
+
+{{ license }}

@@ -4,10 +4,35 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ## Getting Started
 
+### Prerequisites
+
+Install [UV](https://docs.astral.sh/uv/) for fast dependency management:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Setup
+
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/openapi-client-template.git`
-3. Create a feature branch: `git checkout -b feature/your-feature-name`
-4. Install dependencies: `pip install copier`
+2. Clone your fork:
+
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/openapi-client-template.git
+   cd openapi-client-template
+   ```
+
+3. Set up development environment:
+
+   ```bash
+   uv sync --all-extras
+   ```
+
+4. Create a feature branch:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
 ## Development Workflow
 
@@ -17,13 +42,18 @@ To test the template locally:
 
 ```bash
 # Generate a test project from the template
-copier copy . /tmp/test-project
+uvx copier copy . /tmp/test-project
 
 # Or test with specific variables
-copier copy . /tmp/test-project \
+uvx copier copy . /tmp/test-project \
   --data project_name="Test Client" \
   --data project_slug="test-client" \
   --data package_name="test_client"
+
+# Test the generated project
+cd /tmp/test-project
+uv sync --all-extras
+uv run pytest
 ```
 
 ### Testing Template Updates
@@ -61,8 +91,24 @@ Template files use `.jinja` extension and can reference variables from `copier.j
 ## Code Style
 
 - Follow PEP 8 for Python code
+- Use Ruff for linting and formatting
 - Use consistent formatting in Jinja templates
 - Keep generated projects clean and minimal
+
+### Linting and Formatting
+
+Run linting and formatting checks:
+
+```bash
+# Check code style
+uv run ruff check .
+
+# Format code
+uv run ruff format .
+
+# Or check formatting without modifying
+uv run ruff format --check .
+```
 
 ## Testing
 
@@ -71,7 +117,14 @@ Before submitting a PR:
 1. Test template generation with default values
 2. Test template generation with custom values
 3. Test template updates on an existing project
-4. Run any existing CI checks
+4. Run linting and formatting checks
+5. Run any existing tests:
+
+   ```bash
+   uv run pytest
+   ```
+
+6. Verify CI checks pass locally
 
 ## Submitting Changes
 

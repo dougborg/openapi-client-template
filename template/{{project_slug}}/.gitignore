@@ -46,6 +46,7 @@ coverage.xml
 .pytest_cache/
 
 # Virtual environments
+.venv/
 venv/
 env/
 ENV/
@@ -73,3 +74,7 @@ dmypy.json
 
 # Ruff cache
 .ruff_cache/
+
+# UV
+.uv_cache/
+# Keep uv.lock tracked for reproducibility

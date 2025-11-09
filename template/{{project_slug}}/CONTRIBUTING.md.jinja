@@ -4,25 +4,39 @@ Thank you for your interest in contributing to {{ project_name }}!
 
 ## Development Setup
 
+### Prerequisites
+
+Install [UV](https://docs.astral.sh/uv/) for fast dependency management:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Setup Steps
+
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/{{ author_name }}/{{ project_slug }}.git
    cd {{ project_slug }}
    ```
 
 2. Install dependencies:
+
    ```bash
-   pip install -e ".[dev]"
+   uv sync --all-extras
    ```
 
 3. Install pre-commit hooks:
+
    ```bash
-   pre-commit install
+   uv run pre-commit install
    ```
 
 ## Making Changes
 
 1. Create a feature branch:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -30,26 +44,42 @@ Thank you for your interest in contributing to {{ project_name }}!
 2. Make your changes and add tests
 
 3. Run tests:
+
    ```bash
-   pytest
+   uv run pytest
    ```
 
-4. Run linters:
+4. Check code quality:
+
    ```bash
-   ruff check .
-   black --check .
+   # Lint code
+   uv run ruff check .
+
+   # Format code
+   uv run ruff format .
+
+   # Or check formatting without modifying
+   uv run ruff format --check .
    ```
 
-5. Commit your changes with a clear message
+5. Run tests with coverage:
 
-6. Push and open a Pull Request
+   ```bash
+   uv run pytest --cov={{ package_name }} --cov-report=term
+   ```
+
+6. Commit your changes with a clear message
+
+7. Push and open a Pull Request
 
 ## Code Style
 
-- Follow PEP 8
+- Follow PEP 8 (enforced by Ruff)
+- Use Ruff for linting and formatting
 - Use type hints where appropriate
 - Write docstrings for public APIs
 - Keep functions focused and testable
+- All code is automatically formatted with `ruff format`
 
 ## Testing
 

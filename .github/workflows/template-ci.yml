@@ -12,24 +12,25 @@ permissions:
 jobs:
   test-template:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install copier pytest ruff black
-      
+        run: uv pip install --system copier pytest ruff
+
       - name: Test template generation with default values
         run: |
           copier copy --trust --defaults . /tmp/test-project-default
-          
+
       - name: Test template generation with custom values
         run: |
           copier copy --trust . /tmp/test-project-custom \
@@ -40,7 +41,7 @@ jobs:
             --data include_mcp=false \
             --data include_cli=true \
             --data author_name="Test Author"
-      
+
       - name: Verify generated project structure
         run: |
           test -f /tmp/test-project-default/pyproject.toml
@@ -50,58 +51,60 @@ jobs:
           test -d /tmp/test-project-default/src
           test -d /tmp/test-project-default/tests
           test -d /tmp/test-project-default/docs
-      
+
       - name: Test generated project can be installed
         run: |
           cd /tmp/test-project-default
-          pip install -e .
-      
+          uv pip install --system -e .
+
       - name: Run generated project tests
         run: |
           cd /tmp/test-project-default
-          pytest -v
+          uv run pytest -v
 
   lint-template:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ruff black
-      
+        run: uv pip install --system ruff
+
       - name: Lint Python scripts
         run: |
           ruff check scripts/
-          black --check scripts/
+          ruff format --check scripts/
 
   test-sync-script:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install copier
-      
+        run: uv pip install --system copier
+
       - name: Create test project
         run: |
           copier copy --trust --defaults . /tmp/sync-test-project
-      
+
       - name: Test sync script
         run: |
           python scripts/sync-template.py /tmp/sync-test-project --trust

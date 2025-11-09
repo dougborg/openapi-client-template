@@ -5,15 +5,18 @@ Usage:
   # update a project that was created from this template:
   python scripts/sync-template.py /path/to/target --trust
 """
-import sys
+
 import subprocess
+import sys
 from pathlib import Path
+
 
 def run_update(target: Path, trust: bool = False):
     args = ["copier", "update", str(Path(__file__).resolve().parents[1])]
     if trust:
         args.append("--trust")
     subprocess.run(args, cwd=target, check=True)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
