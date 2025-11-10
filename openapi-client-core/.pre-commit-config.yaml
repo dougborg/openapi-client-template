@@ -1,0 +1,53 @@
+# Pre-commit configuration for openapi-client-core
+# See https://pre-commit.com for more information
+#
+# This configuration uses LOCAL hooks that run via uv to avoid network
+# restrictions in CI environments. All tools are installed via project dependencies.
+
+repos:
+  - repo: local
+    hooks:
+      # Python formatting and linting with Ruff (via uv)
+      - id: ruff-format
+        name: ruff format (openapi-client-core)
+        entry: bash -c 'cd openapi-client-core && uv run ruff format'
+        language: system
+        types: [python]
+        files: ^openapi-client-core/
+        pass_filenames: false
+
+      - id: ruff-check
+        name: ruff check (openapi-client-core)
+        entry: bash -c 'cd openapi-client-core && uv run ruff check --fix'
+        language: system
+        types: [python]
+        files: ^openapi-client-core/
+        pass_filenames: false
+
+      # Markdown formatting (via uv)
+      - id: mdformat
+        name: mdformat (openapi-client-core)
+        entry: bash -c 'cd openapi-client-core && uv run mdformat --wrap=88'
+        language: system
+        types: [markdown]
+        files: ^openapi-client-core/
+        exclude: '(CHANGELOG\.md|\.agent\.md$)'
+        pass_filenames: false
+
+      # YAML linting (via uv)
+      - id: yamllint
+        name: yamllint (openapi-client-core)
+        entry: bash -c 'cd openapi-client-core && uv run yamllint -c=.yamllint.yml .'
+        language: system
+        types: [yaml]
+        files: ^openapi-client-core/
+        pass_filenames: false
+
+      # Run tests (via poe task)
+      - id: pytest
+        name: pytest (openapi-client-core)
+        entry: bash -c 'cd openapi-client-core && uv run poe test'
+        language: system
+        files: ^openapi-client-core/
+        pass_filenames: false
+        always_run: false

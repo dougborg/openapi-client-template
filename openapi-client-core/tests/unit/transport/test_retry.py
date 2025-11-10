@@ -3,8 +3,8 @@
 Testing TDD approach - tests written before implementation.
 """
 
-import pytest
 import httpx
+import pytest
 
 
 class TestIdempotentOnlyRetry:
@@ -218,6 +218,7 @@ class TestIdempotentOnlyRetry:
     async def test_exponential_backoff_delays(self):
         """Should use exponential backoff: 1, 2, 4, 8, 16 seconds."""
         import time
+
         from openapi_client_core.transport.retry import IdempotentOnlyRetry
 
         attempt_times = []
@@ -239,7 +240,8 @@ class TestIdempotentOnlyRetry:
 
         # Calculate actual delays between attempts
         delays = [
-            attempt_times[i + 1] - attempt_times[i] for i in range(len(attempt_times) - 1)
+            attempt_times[i + 1] - attempt_times[i]
+            for i in range(len(attempt_times) - 1)
         ]
 
         # Should have 3 delays: 1s, 2s, 4s
