@@ -65,7 +65,7 @@ jobs:
       - name: Run generated project tests
         run: |
           cd /tmp/test-project-default/my-openapi-client
-          uv run pytest -v
+          python -m pytest -v
 
   lint-template:
     runs-on: ubuntu-latest
