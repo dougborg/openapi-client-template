@@ -33,7 +33,7 @@ jobs:
 
       - name: Test template generation with custom values
         run: |
-          copier copy --trust . /tmp/test-project-custom \
+          copier copy --trust --defaults . /tmp/test-project-custom \
             --data project_name="Test Client" \
             --data project_slug="test-client" \
             --data package_name="test_client" \
@@ -109,6 +109,10 @@ jobs:
       - name: Create test project
         run: |
           copier copy --trust --defaults . /tmp/sync-test-project
+
+      - name: Verify copier answers file exists
+        run: |
+          test -f /tmp/sync-test-project/.copier-answers.yml
 
       - name: Test sync script
         run: |
