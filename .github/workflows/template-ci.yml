@@ -112,4 +112,4 @@ jobs:
 
       - name: Test sync script
         run: |
-          python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust
+          python scripts/sync-template.py /tmp/sync-test-project --trust
