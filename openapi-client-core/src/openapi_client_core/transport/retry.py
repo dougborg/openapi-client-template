@@ -165,10 +165,7 @@ class IdempotentOnlyRetry(httpx.AsyncHTTPTransport):
             return False
 
         # Only retry configured status codes
-        if response.status_code not in self.retry_status_codes:
-            return False
-
-        return True
+        return response.status_code in self.retry_status_codes
 
     def _calculate_backoff_delay(self, retry_number: int) -> float:
         """Calculate exponential backoff delay.

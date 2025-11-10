@@ -33,14 +33,29 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    # Testing
     "pytest>=8.4.0",
     "pytest-asyncio>=0.25.0",
     "pytest-cov>=6.0.0",
     "pytest-httpx>=0.33.0",
     "pytest-timeout>=2.3.0",
+    # Code quality and linting
     "ruff>=0.14.0",
+    "pre-commit>=4.2.0",
+    # YAML linting
+    "yamllint>=1.37.0",
+    # Markdown formatting
+    "mdformat>=0.7.17",
+    "mdformat-gfm>=0.3.0",
+    "mdformat-tables>=0.4.0",
+    # Documentation
     "mkdocs-material>=9.5.0",
     "mkdocstrings[python]>=0.27.0",
+]
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.37.0",
 ]
 
 [project.urls]
@@ -84,7 +99,9 @@ select = [
     "PLE", # pylint errors
     "PLW", # pylint warnings
 ]
-ignore = []
+ignore = [
+    "E501",   # line too long (handled by formatter)
+]
 fixable = ["ALL"]
 unfixable = []
 
@@ -136,3 +153,124 @@ exclude_lines = [
 ]
 fail_under = 80
 show_missing = true
+
+[tool.mdformat]
+# Basic formatting options
+wrap = 88
+number = false
+# Enable useful plugins
+extensions = [
+  "gfm",    # GitHub Flavored Markdown
+  "tables", # Table formatting
+]
+
+# =============================================================================
+# Task Runner Configuration (poethepoet)
+# =============================================================================
+
+[tool.poe.tasks]
+
+# -----------------------------------------------------------------------------
+# Code Formatting Tasks
+# -----------------------------------------------------------------------------
+format-python = "ruff format ."
+format-python-check = "ruff format --check ."
+
+format-markdown = "mdformat README.md --wrap 88"
+format-markdown-check = "mdformat --check README.md"
+
+format = ["format-python", "format-markdown"]
+format-check = ["format-python-check", "format-markdown-check"]
+
+# -----------------------------------------------------------------------------
+# Linting Tasks
+# -----------------------------------------------------------------------------
+lint-ruff = "ruff check ."
+lint-ruff-fix = "ruff check --fix ."
+lint-yaml = "yamllint ."
+
+lint = ["lint-ruff", "lint-yaml"]
+
+# -----------------------------------------------------------------------------
+# Testing Tasks
+# -----------------------------------------------------------------------------
+test = "pytest -m 'not slow'"
+test-verbose = "pytest -v -m 'not slow'"
+test-coverage = "pytest --cov=openapi_client_core --cov-report=term-missing --cov-report=xml -m 'not slow'"
+test-coverage-html = "pytest --cov=openapi_client_core --cov-report=html -m 'not slow'"
+test-unit = "pytest -m unit"
+test-integration = "pytest -m integration"
+test-all = "pytest"
+
+# -----------------------------------------------------------------------------
+# Documentation Tasks
+# -----------------------------------------------------------------------------
+docs-build = "mkdocs build"
+docs-clean = "rm -rf site"
+docs-serve = "mkdocs serve"
+
+# -----------------------------------------------------------------------------
+# Pre-commit Tasks
+# -----------------------------------------------------------------------------
+pre-commit-install = "pre-commit install"
+pre-commit-uninstall = "pre-commit uninstall"
+pre-commit-run = "pre-commit run --all-files"
+pre-commit-update = "pre-commit autoupdate"
+
+# -----------------------------------------------------------------------------
+# Combined Workflow Tasks
+# -----------------------------------------------------------------------------
+check = ["format-check", "lint", "test"]
+fix = ["format", "lint-ruff-fix"]
+ci = ["format-check", "lint", "test-coverage"]
+
+# Task help
+[tool.poe.tasks.help]
+help = "Show available tasks"
+shell = """
+echo "🛠️  Available Tasks (run with 'uv run poe <task>'):"
+echo ""
+echo "📁 Code Formatting:"
+echo "   poe format              - Format all code (Python, markdown)"
+echo "   poe format-check        - Check if code is properly formatted"
+echo "   poe format-python       - Format Python code with ruff"
+echo "   poe format-markdown     - Format markdown files"
+echo ""
+echo "📁 Linting:"
+echo "   poe lint                - Run all linters (ruff, yaml)"
+echo "   poe lint-ruff           - Fast linting with ruff"
+echo "   poe lint-yaml           - YAML file linting"
+echo ""
+echo "📁 Testing:"
+echo "   poe test                - Run tests (excluding slow tests)"
+echo "   poe test-coverage       - Run tests with coverage report"
+echo "   poe test-unit           - Run unit tests only"
+echo "   poe test-integration    - Run integration tests only"
+echo "   poe test-all            - Run all tests (including slow)"
+echo ""
+echo "📁 Documentation:"
+echo "   poe docs-build          - Build MkDocs documentation"
+echo "   poe docs-clean          - Clean documentation build files"
+echo "   poe docs-serve          - Serve documentation locally"
+echo ""
+echo "📁 Pre-commit:"
+echo "   poe pre-commit-install  - Install pre-commit hooks"
+echo "   poe pre-commit-run      - Run pre-commit on all files"
+echo "   poe pre-commit-update   - Update pre-commit hooks"
+echo ""
+echo "📁 Development:"
+echo "   poe check               - Quick check: format-check + lint + test"
+echo "   poe ci                  - Full CI pipeline"
+echo "   poe fix                 - Auto-fix formatting and linting issues"
+echo "   poe help                - Show this help message"
+echo ""
+"""
+
+[tool.poe.tasks.clean]
+help = "Clean up build artifacts and cache files"
+shell = """
+echo "🧹 Cleaning build artifacts and cache files..."
+rm -rf .pytest_cache .ruff_cache .coverage htmlcov dist build *.egg-info site
+find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+echo "✨ Workspace cleaned!"
+"""

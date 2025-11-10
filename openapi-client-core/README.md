@@ -9,9 +9,12 @@
 
 ## Vision
 
-`openapi-client-core` provides battle-tested patterns for building Python OpenAPI clients. Instead of duplicating retry logic, error handling, and testing utilities across every client, share a common foundation.
+`openapi-client-core` provides battle-tested patterns for building Python OpenAPI
+clients. Instead of duplicating retry logic, error handling, and testing utilities
+across every client, share a common foundation.
 
 **Features**:
+
 - 🔄 **Composable transport layers** (retry, pagination, error logging, auth)
 - 🔁 **3 retry strategies** (idempotent-only, rate-limit-aware, all-methods)
 - 🛡️ **Error handling** with RFC 7807 ProblemDetails and null field detection
@@ -26,6 +29,7 @@ pip install openapi-client-core
 ```
 
 Or with UV:
+
 ```bash
 uv add openapi-client-core
 ```
@@ -129,6 +133,7 @@ class RateLimitAwareRetry(Retry):
 ```
 
 **Problems**:
+
 - ❌ Code duplication (hundreds of lines per client)
 - ❌ Bug fixes require updating every client
 - ❌ New clients don't benefit from lessons learned
@@ -149,10 +154,11 @@ transport = create_transport_stack(
 ```
 
 **Benefits**:
+
 - ✅ **35-40% less code** in each client
 - ✅ **Shared maintenance**: Fix once, benefit everywhere
 - ✅ **Battle-tested patterns**: Learned from real-world usage
-- ✅ **Fast development**: New clients in <5 minutes
+- ✅ **Fast development**: New clients in \<5 minutes
 
 ## Core Components
 
@@ -195,15 +201,18 @@ transport = create_transport_stack(
 Three retry strategies for different API behaviors:
 
 1. **IdempotentOnlyRetry** (safest)
+
    - Retries only GET, HEAD, OPTIONS on 5xx errors
    - Use when duplicates are dangerous
 
-2. **RateLimitAwareRetry** (recommended)
+1. **RateLimitAwareRetry** (recommended)
+
    - Retries all methods on 429 (rate limit)
    - Retries GET, HEAD, PUT, DELETE on 5xx
    - Best for modern REST APIs
 
-3. **AllMethodsRetry** (use with caution)
+1. **AllMethodsRetry** (use with caution)
+
    - Retries everything
    - Only use with idempotency keys
 
@@ -379,8 +388,10 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## Clients Using This Library
 
-- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client) - Katana MRP/ERP API client
-- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client) - StockTrim inventory management API client
+- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client) - Katana
+  MRP/ERP API client
+- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client) - StockTrim
+  inventory management API client
 
 ## License
 
@@ -393,7 +404,10 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 ## Acknowledgments
 
 This library extracts battle-tested patterns from:
-- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client): Pagination, rate limiting, event hooks
-- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client): Null field detection, idempotent-only retry, code generation patterns
+
+- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client):
+  Pagination, rate limiting, event hooks
+- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client): Null field
+  detection, idempotent-only retry, code generation patterns
 
 Special thanks to the OpenAPI and httpx communities for providing excellent foundations.
