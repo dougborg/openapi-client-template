@@ -54,7 +54,7 @@ license:
 min_python_version:
   type: str
   help: Minimum Python version to support?
-  default: "3.11"
+  default: "3.12"
   choices:
     - "3.11"
     - "3.12"
