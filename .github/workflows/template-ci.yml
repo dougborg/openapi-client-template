@@ -52,6 +52,11 @@ jobs:
           test -d /tmp/test-project-default/tests
           test -d /tmp/test-project-default/docs
 
+      - name: Install openapi-client-core locally
+        run: |
+          cd openapi-client-core
+          uv pip install --system -e .
+
       - name: Test generated project can be installed
         run: |
           cd /tmp/test-project-default
@@ -107,4 +112,4 @@ jobs:
 
       - name: Test sync script
         run: |
-          python scripts/sync-template.py /tmp/sync-test-project --trust
+          python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust
