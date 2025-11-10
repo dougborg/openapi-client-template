@@ -11,11 +11,16 @@ import sys
 from pathlib import Path
 
 
-def run_update(target: Path, trust: bool = False):
+def run_update(target: Path, trust: bool = False) -> None:
+    if not target.exists():
+        raise FileNotFoundError(f"Target directory does not exist: {target}")
+    if not target.is_dir():
+        raise NotADirectoryError(f"Target is not a directory: {target}")
+
     args = ["copier", "update", str(Path(__file__).resolve().parents[1])]
     if trust:
         args.append("--trust")
-    subprocess.run(args, cwd=target, check=True)
+    subprocess.run(args, cwd=str(target), check=True)
 
 
 if __name__ == "__main__":
