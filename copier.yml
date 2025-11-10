@@ -1,6 +1,6 @@
 # Copier template configuration
 
-# Questions/variables for the template  
+# Questions/variables for the template
 _subdirectory: template
 
 _exclude:
@@ -14,3 +14,76 @@ _templates_suffix: .jinja
 
 # Ensure answers file is created
 _answers_file: .copier-answers.yml
+
+# Template questions
+project_name:
+  type: str
+  help: What is your project name?
+  default: "My OpenAPI Client"
+
+project_slug:
+  type: str
+  help: What is your project slug (used for directories and URLs)?
+  default: "{{ project_name|lower|replace(' ', '-')|replace('_', '-') }}"
+
+package_name:
+  type: str
+  help: What is your Python package name?
+  default: "{{ project_slug|replace('-', '_') }}"
+
+api_service:
+  type: str
+  help: What API service are you building a client for?
+  default: "service"
+
+author_name:
+  type: str
+  help: What is your name or organization?
+  default: "dougborg"
+
+license:
+  type: str
+  help: What license do you want to use?
+  default: "MIT"
+  choices:
+    - MIT
+    - Apache-2.0
+    - GPL-3.0
+    - BSD-3-Clause
+
+min_python_version:
+  type: str
+  help: Minimum Python version to support?
+  default: "3.11"
+  choices:
+    - "3.11"
+    - "3.12"
+    - "3.13"
+
+python_version:
+  type: str
+  help: Python version for development?
+  default: "{{ min_python_version }}"
+
+http_library_choice:
+  type: str
+  help: Which HTTP library do you want to use?
+  default: "httpx"
+  choices:
+    - httpx
+    - requests
+
+include_mcp:
+  type: bool
+  help: Include MCP (Model Context Protocol) server?
+  default: true
+
+include_cli:
+  type: bool
+  help: Include CLI (Command Line Interface)?
+  default: false
+
+internal_rate_limiter:
+  type: bool
+  help: Include internal rate limiter?
+  default: true
