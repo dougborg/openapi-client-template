@@ -9,9 +9,8 @@
 
 ## Vision
 
-`openapi-client-core` provides battle-tested patterns for building Python OpenAPI
-clients. Instead of duplicating retry logic, error handling, and testing utilities
-across every client, share a common foundation.
+`openapi-client-core` provides battle-tested patterns for building Python OpenAPI clients. Instead of duplicating retry
+logic, error handling, and testing utilities across every client, share a common foundation.
 
 **Features**:
 
@@ -388,10 +387,8 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## Clients Using This Library
 
-- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client) - Katana
-  MRP/ERP API client
-- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client) - StockTrim
-  inventory management API client
+- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client) - Katana MRP/ERP API client
+- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client) - StockTrim inventory management API client
 
 ## License
 
@@ -405,9 +402,8 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 This library extracts battle-tested patterns from:
 
-- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client):
-  Pagination, rate limiting, event hooks
-- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client): Null field
-  detection, idempotent-only retry, code generation patterns
+- [katana-openapi-client](https://github.com/dougborg/katana-openapi-client): Pagination, rate limiting, event hooks
+- [stocktrim-api-client](https://github.com/dougborg/stocktrim-api-client): Null field detection, idempotent-only retry,
+  code generation patterns
 
 Special thanks to the OpenAPI and httpx communities for providing excellent foundations.

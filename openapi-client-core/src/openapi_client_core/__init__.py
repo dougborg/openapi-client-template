@@ -23,9 +23,7 @@ Example:
     )
 
     # Use with your generated client
-    client = MyClient(
-        base_url="https://api.example.com", token=api_key, transport=transport
-    )
+    client = MyClient(base_url="https://api.example.com", token=api_key, transport=transport)
     ```
 """
 

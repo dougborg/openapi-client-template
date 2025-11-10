@@ -116,9 +116,7 @@ class TestIdempotentOnlyRetry:
 
         # Make POST request
         async with httpx.AsyncClient(transport=retry_transport) as client:
-            response = await client.post(
-                "https://api.example.com/test", json={"data": "test"}
-            )
+            response = await client.post("https://api.example.com/test", json={"data": "test"})
 
         # Should NOT retry - POST is not idempotent
         assert response.status_code == 503
@@ -239,10 +237,7 @@ class TestIdempotentOnlyRetry:
             await client.get("https://api.example.com/test")
 
         # Calculate actual delays between attempts
-        delays = [
-            attempt_times[i + 1] - attempt_times[i]
-            for i in range(len(attempt_times) - 1)
-        ]
+        delays = [attempt_times[i + 1] - attempt_times[i] for i in range(len(attempt_times) - 1)]
 
         # Should have 3 delays: 1s, 2s, 4s
         # Allow 10% tolerance for timing precision

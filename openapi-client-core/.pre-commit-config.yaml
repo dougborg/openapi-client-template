@@ -27,7 +27,7 @@ repos:
       # Markdown formatting (via uv)
       - id: mdformat
         name: mdformat (openapi-client-core)
-        entry: bash -c 'cd openapi-client-core && uv run mdformat --wrap=88'
+        entry: bash -c 'cd openapi-client-core && uv run mdformat --wrap=120'
         language: system
         types: [markdown]
         files: ^openapi-client-core/

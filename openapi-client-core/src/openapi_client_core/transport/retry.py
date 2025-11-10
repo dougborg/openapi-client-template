@@ -72,9 +72,7 @@ class IdempotentOnlyRetry(httpx.AsyncHTTPTransport):
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
         self.retry_status_codes = (
-            retry_status_codes
-            if retry_status_codes is not None
-            else self.DEFAULT_RETRY_STATUS_CODES
+            retry_status_codes if retry_status_codes is not None else self.DEFAULT_RETRY_STATUS_CODES
         )
 
     async def __aenter__(self):
@@ -143,9 +141,7 @@ class IdempotentOnlyRetry(httpx.AsyncHTTPTransport):
         # Should not reach here, but just in case
         return await self._wrapped_transport.handle_async_request(request)
 
-    def _should_retry(
-        self, request: httpx.Request, response: httpx.Response, current_retries: int
-    ) -> bool:
+    def _should_retry(self, request: httpx.Request, response: httpx.Response, current_retries: int) -> bool:
         """Determine if request should be retried.
 
         Args:
