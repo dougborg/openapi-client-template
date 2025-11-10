@@ -94,6 +94,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -113,6 +115,11 @@ jobs:
       - name: Verify copier answers file exists
         run: |
           test -f /tmp/sync-test-project/my-openapi-client/.copier-answers.yml
+
+      - name: Debug copier answers file content
+        run: |
+          echo "Contents of .copier-answers.yml:"
+          cat /tmp/sync-test-project/my-openapi-client/.copier-answers.yml
 
       - name: Test sync script
         run: |
