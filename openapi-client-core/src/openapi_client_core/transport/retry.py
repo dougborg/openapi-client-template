@@ -67,13 +67,11 @@ class IdempotentOnlyRetry(httpx.AsyncHTTPTransport):
         max_retries: int = 5,
         backoff_factor: float = 1.0,
         retry_status_codes: frozenset[int] | None = None,
-    ):
+    ) -> None:
         self._wrapped_transport = wrapped_transport
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
-        self.retry_status_codes = (
-            retry_status_codes if retry_status_codes is not None else self.DEFAULT_RETRY_STATUS_CODES
-        )
+        self.retry_status_codes = retry_status_codes or self.DEFAULT_RETRY_STATUS_CODES
 
     async def __aenter__(self):
         """Enter async context, delegating to wrapped transport."""

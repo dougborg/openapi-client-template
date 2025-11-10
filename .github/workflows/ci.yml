@@ -10,17 +10,25 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  openapi-client-core:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: openapi-client-core
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: 3.11
       - name: Install UV
         uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: "openapi-client-core/uv.lock"
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
       - name: Install dependencies
         run: uv sync --all-extras
-      - name: Run tests
-        run: uv run pytest -q
+      - name: Run checks
+        run: uv run poe check
