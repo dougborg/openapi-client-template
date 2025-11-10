@@ -7,7 +7,7 @@ name = "openapi-client-core"
 version = "0.1.0"
 description = "Shared runtime library for Python OpenAPI clients with transport layers, retry logic, auth patterns, and testing utilities"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
     { name = "Doug Borg", email = "dougborg@users.noreply.github.com" }
@@ -18,9 +18,9 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Internet :: WWW/HTTP",
     "Typing :: Typed",
@@ -77,13 +77,13 @@ include = [
 ]
 
 [tool.ruff]
-line-length = 88
-target-version = "py311"
+line-length = 120
+target-version = "py312"
 src = ["src", "tests"]
 
 [tool.ruff.format]
 docstring-code-format = true
-docstring-code-line-length = 88
+docstring-code-line-length = 120
 
 [tool.ruff.lint]
 select = [
@@ -156,7 +156,7 @@ show_missing = true
 
 [tool.mdformat]
 # Basic formatting options
-wrap = 88
+wrap = 120
 number = false
 # Enable useful plugins
 extensions = [
@@ -176,7 +176,7 @@ extensions = [
 format-python = "ruff format ."
 format-python-check = "ruff format --check ."
 
-format-markdown = "mdformat README.md --wrap 88"
+format-markdown = "mdformat README.md --wrap 120"
 format-markdown-check = "mdformat --check README.md"
 
 format = ["format-python", "format-markdown"]
