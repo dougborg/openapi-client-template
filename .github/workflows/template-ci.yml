@@ -44,13 +44,13 @@ jobs:
 
       - name: Verify generated project structure
         run: |
-          test -f /tmp/test-project-default/pyproject.toml
-          test -f /tmp/test-project-default/README.md
-          test -f /tmp/test-project-default/LICENSE
-          test -f /tmp/test-project-default/.github/workflows/client-ci.yml
-          test -d /tmp/test-project-default/src
-          test -d /tmp/test-project-default/tests
-          test -d /tmp/test-project-default/docs
+          test -f /tmp/test-project-default/my-openapi-client/pyproject.toml
+          test -f /tmp/test-project-default/my-openapi-client/README.md
+          test -f /tmp/test-project-default/my-openapi-client/LICENSE
+          test -f /tmp/test-project-default/my-openapi-client/.github/workflows/client-ci.yml
+          test -d /tmp/test-project-default/my-openapi-client/src
+          test -d /tmp/test-project-default/my-openapi-client/tests
+          test -d /tmp/test-project-default/my-openapi-client/docs
 
       - name: Install openapi-client-core locally
         run: |
@@ -59,12 +59,12 @@ jobs:
 
       - name: Test generated project can be installed
         run: |
-          cd /tmp/test-project-default
+          cd /tmp/test-project-default/my-openapi-client
           uv pip install --system -e .
 
       - name: Run generated project tests
         run: |
-          cd /tmp/test-project-default
+          cd /tmp/test-project-default/my-openapi-client
           uv run pytest -v
 
   lint-template:
@@ -112,8 +112,8 @@ jobs:
 
       - name: Verify copier answers file exists
         run: |
-          test -f /tmp/sync-test-project/.copier-answers.yml
+          test -f /tmp/sync-test-project/my-openapi-client/.copier-answers.yml
 
       - name: Test sync script
         run: |
-          python scripts/sync-template.py /tmp/sync-test-project --trust
+          python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust
