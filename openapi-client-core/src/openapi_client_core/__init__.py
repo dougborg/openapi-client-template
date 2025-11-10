@@ -28,7 +28,8 @@ Example:
 """
 
 from openapi_client_core.client import BaseOpenAPIClient
+from openapi_client_core.errors import APIError, raise_for_status
 
 __version__ = "0.1.0"
 
-__all__ = ["BaseOpenAPIClient", "__version__"]
+__all__ = ["APIError", "BaseOpenAPIClient", "__version__", "raise_for_status"]
