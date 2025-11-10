@@ -251,34 +251,76 @@ transport = CustomHeaderAuthTransport(
 Structured exceptions with RFC 7807 ProblemDetails:
 
 ```python
-from openapi_client_core.exceptions import (
+from openapi_client_core.errors import (
     APIError,
-    AuthenticationError,  # 401
-    PermissionError,      # 403
-    NotFoundError,        # 404
-    ValidationError,      # 400, 422
-    ServerError,          # 5xx
+    UnauthorizedError,   # 401
+    ForbiddenError,      # 403
+    NotFoundError,       # 404
+    ValidationError,     # 422
+    BadRequestError,     # 400
+    ConflictError,       # 409
+    RateLimitError,      # 429
+    ServerError,         # 5xx
+    raise_for_status,
+    detect_null_fields,
 )
+import httpx
 
+# Automatic RFC 7807 parsing
+response = httpx.get("https://api.example.com/users/123")
 try:
-    data = unwrap(response)
-except ValidationError as e:
+    raise_for_status(response)
+except NotFoundError as e:
     # Access structured error details
-    print(e.problem_details.title)
-    print(e.problem_details.detail)
-    print(e.problem_details.errors)
+    print(e.status_code)  # 404
+    print(e.problem_detail.title)  # "Resource Not Found"
+    print(e.problem_detail.detail)  # "User with id 123 does not exist"
+    print(e.problem_detail.type)  # "https://api.example.com/problems/not-found"
+
+# ValidationError with structured errors
+try:
+    raise_for_status(response)
+except ValidationError as e:
+    print(e.validation_errors)  # [{"field": "email", "message": "Invalid"}]
+
+# RateLimitError with retry timing
+try:
+    raise_for_status(response)
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after} seconds")
+
+# Detect null fields in response data
+data = {"user": {"name": "John", "email": None}}
+null_fields = detect_null_fields(data)
+print(null_fields)  # ["user.email"]
 ```
 
-**Null field detection** (unique innovation from stocktrim):
+**Null field detection**:
 
 ```python
-# Automatically detects when API returns null for required fields
-# Logs actionable fix suggestions:
-# ERROR: Found 2 null field(s): ['user.email', 'order.created_at']
-# Possible fixes:
-#   1. Add fields to nullable list in regenerate_client.py
-#   2. Update OpenAPI spec with 'nullable: true'
-#   3. Handle null values defensively in helpers
+from openapi_client_core.errors import detect_null_fields, NullFieldError
+
+# Detect null fields in API response
+data = {
+    "user": {
+        "name": "John",
+        "email": None,
+        "address": {
+            "city": None,
+            "street": "123 Main St"
+        }
+    }
+}
+
+null_paths = detect_null_fields(data)
+print(null_paths)  # ["user.email", "user.address.city"]
+
+# Raise helpful error for null fields
+if null_paths:
+    raise NullFieldError(
+        message=f"Found {len(null_paths)} null field(s): {null_paths}",
+        field_path=null_paths[0]
+    )
 ```
 
 ### Testing Utilities
