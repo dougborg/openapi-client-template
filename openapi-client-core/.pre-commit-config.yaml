@@ -37,7 +37,7 @@ repos:
       # YAML linting (via uv)
       - id: yamllint
         name: yamllint (openapi-client-core)
-        entry: bash -c 'cd openapi-client-core && uv run yamllint -c=.yamllint.yml .'
+        entry: bash -c 'cd openapi-client-core && uv run yamllint -c .yamllint.yml .'
         language: system
         types: [yaml]
         files: ^openapi-client-core/

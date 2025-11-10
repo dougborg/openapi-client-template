@@ -164,6 +164,9 @@ extensions = [
   "tables", # Table formatting
 ]
 
+# NOTE: yamllint does not support pyproject.toml configuration
+# Configuration is in .yamllint.yml
+
 # =============================================================================
 # Task Runner Configuration (poethepoet)
 # =============================================================================
