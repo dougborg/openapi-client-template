@@ -27,6 +27,8 @@ Example:
     ```
 """
 
+from openapi_client_core.client import BaseOpenAPIClient
+
 __version__ = "0.1.0"
 
-__all__ = ["__version__"]
+__all__ = ["BaseOpenAPIClient", "__version__"]
