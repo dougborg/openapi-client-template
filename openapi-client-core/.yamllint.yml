@@ -3,7 +3,7 @@ extends: default
 
 rules:
   line-length:
-    max: 200  # Lenient for CI/CD files with long command lines
+    max: 200
   document-start: disable
   truthy:
     allowed-values: ['true', 'false', 'yes', 'no', 'True', 'False']
