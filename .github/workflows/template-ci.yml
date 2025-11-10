@@ -110,17 +110,10 @@ jobs:
         run: |
           copier copy --trust --defaults . /tmp/sync-test-project
 
-      # TODO: Debug why .copier-answers.yml is not being created
-      # - name: Verify copier answers file exists
-      #   run: |
-      #     test -f /tmp/sync-test-project/my-openapi-client/.copier-answers.yml
-
-      # TODO: Re-enable once copier answers file issue is resolved
-      # - name: Test sync script
-      #   run: |
-      #     python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust
-
-      - name: Placeholder - sync test disabled
+      - name: Verify copier answers file exists
         run: |
-          echo "Sync script test temporarily disabled pending copier answers file investigation"
-          ls -la /tmp/sync-test-project/my-openapi-client/
+          test -f /tmp/sync-test-project/my-openapi-client/.copier-answers.yml
+
+      - name: Test sync script
+        run: |
+          python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust
