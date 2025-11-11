@@ -29,7 +29,14 @@ Example:
 
 from openapi_client_core.auth import CredentialResolver
 from openapi_client_core.client import BaseOpenAPIClient
+from openapi_client_core.transport.retry import IdempotentOnlyRetry, RateLimitAwareRetry
 
 __version__ = "0.1.0"
 
-__all__ = ["BaseOpenAPIClient", "CredentialResolver", "__version__"]
+__all__ = [
+    "BaseOpenAPIClient",
+    "CredentialResolver",
+    "IdempotentOnlyRetry",
+    "RateLimitAwareRetry",
+    "__version__",
+]
