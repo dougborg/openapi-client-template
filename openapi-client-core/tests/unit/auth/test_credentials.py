@@ -4,7 +4,6 @@ This module tests the CredentialResolver class which provides flexible
 credential resolution from multiple sources with priority ordering.
 """
 
-
 import pytest
 
 from openapi_client_core.auth import CredentialResolver
@@ -315,7 +314,9 @@ class TestThreadSafety:
 
         resolver = CredentialResolver(dotenv_path=str(dotenv_file))
 
-        # Call multiple times to ensure lock works
+        # Directly call the private method multiple times to ensure thread-safety.
+        # This tests internal implementation details because there is no public API
+        # that exercises the thread-safety mechanism as precisely.
         resolver._ensure_dotenv_loaded()
         resolver._ensure_dotenv_loaded()
         resolver._ensure_dotenv_loaded()
