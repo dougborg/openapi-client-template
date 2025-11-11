@@ -41,7 +41,7 @@ retry_transport = RateLimitAwareRetry(
 
 async with httpx.AsyncClient(transport=retry_transport) as client:
     # Retries on 429 with Retry-After header support
-    response = await client.post("https://api.example.com/data", json={...})
+    response = await client.post("https://api.example.com/data", json={"key": "value"})
 ```
 """
 

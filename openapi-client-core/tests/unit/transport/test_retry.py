@@ -479,24 +479,22 @@ class TestRateLimitAwareRetry:
     @pytest.mark.unit
     async def test_respects_retry_after_header_http_date(self):
         """Should respect Retry-After header (HTTP-date format) on 429."""
+        import asyncio
         import time
         from datetime import datetime, timedelta
+        from unittest.mock import patch
 
         from openapi_client_core.transport.retry import RateLimitAwareRetry
 
         attempt_times = []
         retry_delay_used = []
 
-        # Patch the retry transport to capture the delay
-        original_sleep = __import__("asyncio").sleep
+        # Create a capturing sleep mock
+        original_sleep = asyncio.sleep
 
         async def capturing_sleep(delay):
             retry_delay_used.append(delay)
             await original_sleep(delay)
-
-        import asyncio
-
-        asyncio.sleep = capturing_sleep
 
         async def mock_handler(request: httpx.Request) -> httpx.Response:
             attempt_times.append(time.time())
@@ -510,20 +508,18 @@ class TestRateLimitAwareRetry:
         mock_transport = httpx.MockTransport(mock_handler)
         retry_transport = RateLimitAwareRetry(wrapped_transport=mock_transport)
 
-        try:
+        # Use unittest.mock.patch for safe mocking with automatic cleanup
+        with patch("asyncio.sleep", side_effect=capturing_sleep):
             async with httpx.AsyncClient(transport=retry_transport) as client:
                 response = await client.get("https://api.example.com/test")
 
-            assert response.status_code == 200
-            assert len(attempt_times) == 2
-            assert len(retry_delay_used) == 1
+        assert response.status_code == 200
+        assert len(attempt_times) == 2
+        assert len(retry_delay_used) == 1
 
-            # Verify the delay used was from Retry-After, not exponential backoff (which would be 1.0)
-            # Due to time passing and second granularity, expect 2-3 seconds
-            assert 2.0 < retry_delay_used[0] < 3.5
-        finally:
-            # Restore original sleep
-            asyncio.sleep = original_sleep
+        # Verify the delay used was from Retry-After, not exponential backoff (which would be 1.0)
+        # Due to time passing and second granularity, expect 2-3 seconds
+        assert 2.0 < retry_delay_used[0] < 3.5
 
     @pytest.mark.unit
     async def test_exponential_backoff_on_429_without_retry_after(self):
