@@ -29,14 +29,17 @@ Example:
 
 from openapi_client_core.auth import CredentialResolver
 from openapi_client_core.client import BaseOpenAPIClient
+from openapi_client_core.errors import APIError, raise_for_status
 from openapi_client_core.transport.retry import IdempotentOnlyRetry, RateLimitAwareRetry
 
 __version__ = "0.1.0"
 
 __all__ = [
+    "APIError",
     "BaseOpenAPIClient",
     "CredentialResolver",
     "IdempotentOnlyRetry",
     "RateLimitAwareRetry",
     "__version__",
+    "raise_for_status",
 ]

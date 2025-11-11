@@ -33,7 +33,8 @@
       "Bash(gh run watch:*)",
       "Bash(gh agent-task:*)",
       "Bash(gh api:*)",
-      "Bash(gh run rerun:*)"
+      "Bash(gh run rerun:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
