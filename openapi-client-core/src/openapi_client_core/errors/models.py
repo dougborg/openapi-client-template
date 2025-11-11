@@ -38,7 +38,8 @@ class ProblemDetail:
             # Try to parse as JSON anyway if it has the right structure
             try:
                 data = response.json()
-            except Exception:
+            except (ValueError, TypeError, AttributeError):
+                # JSON decode errors, type errors, or missing .json() method
                 return None
 
             # Check if it looks like RFC 7807 (has at least one standard field)
@@ -48,7 +49,8 @@ class ProblemDetail:
         else:
             try:
                 data = response.json()
-            except Exception:
+            except (ValueError, TypeError, AttributeError):
+                # JSON decode errors, type errors, or missing .json() method
                 return None
 
         # Extract standard fields
@@ -83,11 +85,11 @@ class ProblemDetail:
 
         # Add detail if we have a title
         if self.title and self.detail and self.title != self.detail:
-            lines.append(f"\n{self.detail}")
+            lines.append(self.detail)
 
         # Add problem type
         if self.type:
-            lines.append(f"\nProblem Type: {self.type}")
+            lines.append(f"Problem Type: {self.type}")
 
         # Add instance
         if self.instance:
@@ -95,8 +97,8 @@ class ProblemDetail:
 
         # Add extension fields
         if self.extensions:
-            lines.append("\nExtension fields:")
+            lines.append("Extension fields:")
             for key, value in self.extensions.items():
                 lines.append(f"  - {key}: {value}")
 
-        return "".join(lines) if lines else "Unknown API error"
+        return "\n".join(lines) if lines else "Unknown API error"

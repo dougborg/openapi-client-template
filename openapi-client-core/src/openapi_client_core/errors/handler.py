@@ -65,10 +65,7 @@ def raise_for_status(response: httpx.Response) -> None:
         message = problem_detail.to_exception_message()
     else:
         # Fallback to simple message with response text
-        try:
-            response_text = response.text[:200]
-        except Exception:
-            response_text = ""
+        response_text = response.text[:200]
         message = f"HTTP {status_code}: {response_text}" if response_text else f"HTTP {status_code}"
 
     # Handle special case for RateLimitError
@@ -94,9 +91,11 @@ def raise_for_status(response: httpx.Response) -> None:
         validation_errors = None
         if problem_detail and problem_detail.extensions:
             # Try to extract validation errors from extensions
-            validation_errors = problem_detail.extensions.get("errors") or problem_detail.extensions.get(
-                "validation_errors"
-            )
+            # Use explicit key checking to handle empty collections properly
+            if "errors" in problem_detail.extensions:
+                validation_errors = problem_detail.extensions.get("errors")
+            else:
+                validation_errors = problem_detail.extensions.get("validation_errors")
         raise exc_class(
             message=message,
             validation_errors=validation_errors,

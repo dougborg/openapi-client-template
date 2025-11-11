@@ -65,7 +65,7 @@ class ValidationError(ClientError):
 
     def __init__(self, message: str, validation_errors: list[dict] | None = None, **kwargs):
         super().__init__(message, **kwargs)
-        self.validation_errors = validation_errors or []
+        self.validation_errors = validation_errors if validation_errors is not None else []
 
 
 class RateLimitError(ClientError):
