@@ -30,7 +30,11 @@
       "Bash(git push:*)",
       "Bash(gh pr create:*)",
       "Bash(uv run:*)",
-      "Bash(gh run watch:*)"
+      "Bash(gh run watch:*)",
+      "Bash(gh agent-task:*)",
+      "Bash(gh api:*)",
+      "Bash(gh run rerun:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
