@@ -28,7 +28,8 @@ Example:
 """
 
 from openapi_client_core.client import BaseOpenAPIClient
+from openapi_client_core.transport.retry import IdempotentOnlyRetry, RateLimitAwareRetry
 
 __version__ = "0.1.0"
 
-__all__ = ["BaseOpenAPIClient", "__version__"]
+__all__ = ["BaseOpenAPIClient", "IdempotentOnlyRetry", "RateLimitAwareRetry", "__version__"]
