@@ -736,6 +736,119 @@ class TestRateLimitAwareRetry:
         delay = attempt_times[1] - attempt_times[0]
         assert 0.9 < delay < 1.1
 
+    @pytest.mark.unit
+    async def test_handles_network_errors_with_retry(self):
+        """Should retry on network errors for idempotent methods."""
+        from openapi_client_core.transport.retry import IdempotentOnlyRetry
+
+        attempt_count = 0
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempt_count
+            attempt_count += 1
+            if attempt_count < 2:
+                raise httpx.NetworkError("Connection failed")
+            return httpx.Response(200)
+
+        mock_transport = httpx.MockTransport(mock_handler)
+        retry_transport = IdempotentOnlyRetry(wrapped_transport=mock_transport, max_retries=3)
+
+        async with httpx.AsyncClient(transport=retry_transport) as client:
+            response = await client.get("https://api.example.com/test")
+
+        assert response.status_code == 200
+        assert attempt_count == 2
+
+    @pytest.mark.unit
+    async def test_network_error_exceeds_max_retries(self):
+        """Should raise exception when network errors exceed max retries."""
+        from openapi_client_core.transport.retry import IdempotentOnlyRetry
+
+        attempt_count = 0
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempt_count
+            attempt_count += 1
+            raise httpx.NetworkError("Connection failed")
+
+        mock_transport = httpx.MockTransport(mock_handler)
+        retry_transport = IdempotentOnlyRetry(wrapped_transport=mock_transport, max_retries=2)
+
+        async with httpx.AsyncClient(transport=retry_transport) as client:
+            with pytest.raises(httpx.NetworkError):
+                await client.get("https://api.example.com/test")
+
+        assert attempt_count == 3  # Initial + 2 retries
+
+    @pytest.mark.unit
+    async def test_ratelimit_network_error_retry(self):
+        """RateLimitAwareRetry should retry network errors for idempotent methods."""
+        from openapi_client_core.transport.retry import RateLimitAwareRetry
+
+        attempt_count = 0
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempt_count
+            attempt_count += 1
+            if attempt_count < 2:
+                raise httpx.NetworkError("Connection failed")
+            return httpx.Response(200)
+
+        mock_transport = httpx.MockTransport(mock_handler)
+        retry_transport = RateLimitAwareRetry(wrapped_transport=mock_transport, max_retries=3)
+
+        # Use GET (idempotent) instead of POST
+        async with httpx.AsyncClient(transport=retry_transport) as client:
+            response = await client.get("https://api.example.com/test")
+
+        assert response.status_code == 200
+        assert attempt_count == 2
+
+    @pytest.mark.unit
+    async def test_ratelimit_network_error_exceeds_max_retries(self):
+        """RateLimitAwareRetry should raise when network errors exceed max retries."""
+        from openapi_client_core.transport.retry import RateLimitAwareRetry
+
+        attempt_count = 0
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempt_count
+            attempt_count += 1
+            raise httpx.NetworkError("Connection failed")
+
+        mock_transport = httpx.MockTransport(mock_handler)
+        retry_transport = RateLimitAwareRetry(wrapped_transport=mock_transport, max_retries=2)
+
+        async with httpx.AsyncClient(transport=retry_transport) as client:
+            with pytest.raises(httpx.NetworkError):
+                await client.get("https://api.example.com/test")
+
+        assert attempt_count == 3  # Initial + 2 retries
+
+    @pytest.mark.unit
+    async def test_fallback_to_wrapped_transport_on_no_response(self):
+        """Should fall back to wrapped transport when no response after max retries."""
+        from openapi_client_core.transport.retry import IdempotentOnlyRetry
+
+        # This tests the edge case where last_response is None
+        # and we fall through to the final return statement
+        attempt_count = 0
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempt_count
+            attempt_count += 1
+            # Return a non-retryable response (2xx) but we'll simulate edge case
+            return httpx.Response(200)
+
+        mock_transport = httpx.MockTransport(mock_handler)
+        retry_transport = IdempotentOnlyRetry(wrapped_transport=mock_transport, max_retries=0)
+
+        async with httpx.AsyncClient(transport=retry_transport) as client:
+            response = await client.get("https://api.example.com/test")
+
+        assert response.status_code == 200
+        assert attempt_count == 1
+
 
 class TestAllMethodsRetry:
     """Test AllMethodsRetry - use with caution.

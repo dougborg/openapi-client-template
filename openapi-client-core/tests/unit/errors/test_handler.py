@@ -4,6 +4,7 @@ import pytest
 from httpx import Response
 
 from openapi_client_core.errors.exceptions import (
+    APIError,
     BadRequestError,
     ClientError,
     ConflictError,
@@ -296,3 +297,107 @@ def test_detect_null_fields_empty_dict():
     null_paths = detect_null_fields(data)
 
     assert null_paths == []
+
+
+@pytest.mark.unit
+def test_detect_null_fields_empty_list():
+    """Test detect_null_fields handles empty list."""
+    data = []
+
+    null_paths = detect_null_fields(data)
+
+    assert null_paths == []
+
+
+@pytest.mark.unit
+def test_detect_null_fields_nested_list():
+    """Test detect_null_fields finds nulls in nested lists."""
+    data = {"items": [[1, 2], [None, 4], [5, 6]]}
+
+    null_paths = detect_null_fields(data)
+
+    assert "items[1][0]" in null_paths
+
+
+@pytest.mark.unit
+def test_raise_for_status_429_invalid_retry_after():
+    """Test raise_for_status handles invalid retry-after header."""
+    response = Response(
+        status_code=429,
+        headers={"retry-after": "invalid"},
+        text="Too many requests",
+    )
+
+    with pytest.raises(RateLimitError) as exc_info:
+        raise_for_status(response)
+
+    assert exc_info.value.status_code == 429
+    assert exc_info.value.retry_after is None  # Should be None when parsing fails
+
+
+@pytest.mark.unit
+def test_raise_for_status_validation_with_validation_errors_key():
+    """Test raise_for_status extracts validation errors using validation_errors key."""
+    response = Response(
+        status_code=422,
+        headers={"content-type": "application/problem+json"},
+        json={
+            "type": "https://api.example.com/problems/validation",
+            "title": "Validation Failed",
+            "status": 422,
+            "validation_errors": [{"field": "name", "message": "Required"}],
+        },
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        raise_for_status(response)
+
+    assert exc_info.value.validation_errors is not None
+    assert len(exc_info.value.validation_errors) == 1
+    assert exc_info.value.validation_errors[0]["field"] == "name"
+
+
+@pytest.mark.unit
+def test_raise_for_status_validation_with_empty_extensions():
+    """Test raise_for_status handles ValidationError with empty extensions."""
+    response = Response(
+        status_code=422,
+        headers={"content-type": "application/problem+json"},
+        json={
+            "type": "https://api.example.com/problems/validation",
+            "title": "Validation Failed",
+            "status": 422,
+        },
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        raise_for_status(response)
+
+    assert exc_info.value.validation_errors is None or exc_info.value.validation_errors == []
+
+
+@pytest.mark.unit
+def test_raise_for_status_non_http_status_code():
+    """Test raise_for_status handles non-standard status codes."""
+    # Create a response with a status code outside normal HTTP range
+    response = Response(status_code=999, text="Unknown status")
+
+    with pytest.raises(APIError) as exc_info:
+        raise_for_status(response)
+
+    assert exc_info.value.status_code == 999
+    assert isinstance(exc_info.value, APIError)
+    assert not isinstance(exc_info.value, ClientError)
+    assert not isinstance(exc_info.value, ServerError)
+
+
+@pytest.mark.unit
+def test_raise_for_status_empty_response_text():
+    """Test raise_for_status handles empty response text."""
+    response = Response(status_code=500, text="")
+
+    with pytest.raises(ServerError) as exc_info:
+        raise_for_status(response)
+
+    assert exc_info.value.status_code == 500
+    assert "500" in str(exc_info.value)
