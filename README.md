@@ -106,6 +106,29 @@ To contribute to this template:
    uv run ruff format .
    ```
 
+### Multi-Project Workspace
+
+A VS Code/Cursor workspace configuration is available in the parent `Projects/` directory for working with the template and generated clients together:
+
+1. Open the workspace:
+   ```bash
+   cd ~/Projects
+   code openapi-clients-workspace.code-workspace
+   ```
+
+2. The workspace includes:
+   - **Template** - This repository
+   - **Katana Client** - Generated client (if present)
+   - **StockTrim Client** - Generated client (if present)
+
+3. Features:
+   - Cross-project tasks (run checks/tests across all projects)
+   - Shared settings (Python, linting, formatting)
+   - Template sync tasks (sync template changes to clients)
+   - Pre-configured debug configurations
+
+See [docs/WORKSPACE_SETUP.md](docs/WORKSPACE_SETUP.md) for complete workspace setup guide.
+
 ## Template Structure
 
 - **template/**: The Copier template that is expanded into each new client repo
