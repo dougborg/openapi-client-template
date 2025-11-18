@@ -5,6 +5,7 @@ A [Copier](https://copier.readthedocs.io/)-based template for bootstrapping cons
 ## Purpose
 
 This template provides:
+
 - **Reproducible project structure** for Python OpenAPI clients with modern PEP 621 packaging
 - **UV-powered development** with fast, reliable dependency management and lock files
 - **Modern build system** using Hatchling for streamlined packaging
@@ -32,16 +33,19 @@ pip install uv
 ### Creating a New Project
 
 1. Install Copier:
+
    ```bash
    uv tool install copier
    ```
 
 2. Generate a new client project:
+
    ```bash
    uvx copier copy gh:dougborg/openapi-client-template my-api-client
    ```
 
 3. Follow the interactive prompts to configure your project, or provide values directly:
+
    ```bash
    uvx copier copy gh:dougborg/openapi-client-template my-api-client \
      --data project_name="My API Client" \
@@ -136,6 +140,7 @@ The template supports the following configuration variables (defined in `copier.
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+
 - Testing the template locally
 - Making changes to template files
 - Submitting pull requests

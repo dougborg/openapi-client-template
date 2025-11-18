@@ -1,0 +1,143 @@
+# Cursor Rules for openapi-client-template
+
+## Project Overview
+
+This is a **Copier template repository** for generating standardized Python OpenAPI client projects. The repository contains:
+
+1. **Template files** (`template/`): Jinja2 templates that are expanded into new client projects
+2. **Shared library** (`openapi-client-core/`): A reusable Python package with common OpenAPI client functionality
+3. **Scripts** (`scripts/`): Helper scripts for template synchronization and maintenance
+
+## Project Structure
+
+- `template/{{project_slug}}/`: Copier template directory with Jinja2 templates (`.jinja` files)
+- `openapi-client-core/`: Shared runtime library for OpenAPI clients
+- `scripts/`: Python scripts for template management
+- `docs/`: Documentation and analysis files
+
+## Python Environment
+
+- **Python Version**: 3.12+ for `openapi-client-core`, 3.9+ for template repository
+- **Package Manager**: UV (preferred) or pip
+- **Build System**: Hatchling
+- **Code Style**: Ruff (line length: 100 for root, 120 for core library)
+
+## Code Style & Conventions
+
+### General Python Style
+
+- Use **type hints** for all function parameters and return types
+- Prefer **modern Python syntax** (Python 3.12+ features where applicable)
+- Use **f-strings** for string formatting
+- Follow **PEP 8** conventions (enforced by Ruff)
+- Use **docstrings** for all public classes, functions, and modules (Google or NumPy style)
+
+### Import Organization
+
+- Use **absolute imports** (no relative imports)
+- Group imports: stdlib, third-party, first-party
+- Ruff's `isort` handles import sorting automatically
+
+### Error Handling
+
+- Use **custom exception classes** (see `openapi_client_core/auth/exceptions.py` and `errors/exceptions.py`)
+- Provide **clear error messages** with context
+- Log errors appropriately (use logging module)
+
+### Testing
+
+- Use **pytest** for all tests
+- Tests in `tests/` directory, organized by `unit/` and `integration/` subdirectories
+- Use **pytest markers** (`@pytest.mark.unit`, `@pytest.mark.integration`, `@pytest.mark.slow`)
+- Use **pytest fixtures** (defined in `conftest.py`)
+- Aim for **80%+ test coverage**
+
+### Template Files (Jinja2)
+
+- Template files use `.jinja` extension
+- Variables use Copier syntax: `{{variable_name}}` or `{{project_slug}}`
+- Special variables: `{{_copier_conf.answers_file}}` for Copier config
+- When editing template files, consider how they'll be expanded in generated projects
+
+## Key Patterns & Architecture
+
+### Transport Layer Pattern
+
+- Composable transport layers (Base → ErrorLogging → Pagination → Retry)
+- Each layer wraps the previous one
+- Configurable via factory functions
+
+### Credential Resolution
+
+- Multi-source credential resolution (explicit → env var → .env file → default)
+- Use `CredentialResolver` from `openapi_client_core.auth.credentials`
+- Never log full credentials (mask with `***`)
+
+### Client Architecture
+
+- Base client classes in `openapi_client_core.client`
+- Service-specific clients extend base classes
+- Separation of generated code (api/, models/) vs custom code (helpers/, domain/)
+
+### Error Handling
+
+- Custom exception hierarchy in `openapi_client_core.errors`
+- Error translation from HTTP responses to domain exceptions
+- Comprehensive error logging
+
+## Development Workflow
+
+### Running Commands
+
+- Use `uv run <command>` to run commands in the project environment
+- Use `uv sync` to install dependencies
+- Use `uv run pytest` to run tests
+- Use `uv run ruff check .` to lint
+- Use `uv run ruff format .` to format
+
+### Template Development
+
+- Template files are in `template/{{project_slug}}/`
+- Test template changes by generating a test project: `uvx copier copy . /tmp/test-project`
+- Template variables are defined in `copier.json` and `copier.yml`
+
+### Shared Library Development
+
+- Core library code is in `openapi-client-core/src/openapi_client_core/`
+- Follow the patterns documented in `docs/analysis/extraction-plan.md`
+- Maintain backward compatibility when possible
+
+## File Naming Conventions
+
+- Python files: `snake_case.py`
+- Test files: `test_*.py`
+- Template files: `*.jinja`
+- Configuration: `pyproject.toml`, `copier.json`, `copier.yml`
+
+## Documentation
+
+- README files use Markdown
+- Code documentation uses docstrings
+- Architecture decisions documented in `docs/` directory
+- Use `mdformat` for markdown formatting (120 char wrap)
+
+## When Making Changes
+
+1. **Template changes**: Consider impact on all generated projects
+2. **Core library changes**: Maintain backward compatibility, update tests
+3. **Always**: Run tests, lint, and format before committing
+4. **Documentation**: Update relevant docs when adding features
+
+## Common Tasks
+
+- **Add new template variable**: Update `copier.json` and add to template files
+- **Add shared functionality**: Add to `openapi-client-core/` with tests
+- **Update dependencies**: Update `pyproject.toml` and run `uv lock`
+- **Test template**: Generate test project and verify
+
+## Important Notes
+
+- **Never modify generated code** in client projects (api/, models/, client.py, etc.)
+- **Custom code** goes in helpers/, domain/, or root-level modules
+- **Template files** use Jinja2 syntax - be careful with `{{` and `}}`
+- **Lock files** (`uv.lock`) should be committed for reproducibility

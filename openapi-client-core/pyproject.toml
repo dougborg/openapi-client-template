@@ -137,6 +137,7 @@ omit = [
     "*/tests/*",
     "*/test_*",
     "*/conftest.py",
+    "*/testing/__init__.py",  # Placeholder module, not yet implemented
 ]
 branch = true
 
