@@ -4,11 +4,10 @@ This document explains how to set up and use the multi-project workspace for the
 
 ## Workspace Overview
 
-The workspace includes three related projects:
+The workspace typically includes the following related projects:
 
 1. **Template** (`openapi-client-template/`) - The Copier template repository
-2. **Katana Client** (`katana-openapi-client/`) - Generated client for Katana Manufacturing ERP API
-3. **StockTrim Client** (`stocktrim-openapi-client/`) - Generated client for StockTrim API
+2. **Generated client projects** (e.g., `katana-openapi-client/`, `stocktrim-openapi-client/`) - Example generated clients for specific APIs. Your workspace may include different generated clients depending on your use case.
 
 ## Opening the Workspace
 
@@ -124,6 +123,7 @@ The template repository is the source of truth. Changes to the template can be s
    ```bash
    python scripts/sync-template.py ../katana-openapi-client --trust
    ```
+   > **Note:** The above command assumes that the template and client repositories are siblings (i.e., both are in the same parent directory). If your project layout differs, adjust the path accordingly. See [Alternative Workspace Locations](#alternative-workspace-locations) below for more details.
 
 2. **Workspace task**: Use "Template: Sync to Katana" or "Template: Sync to StockTrim"
 
