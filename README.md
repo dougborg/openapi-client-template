@@ -111,6 +111,7 @@ To contribute to this template:
 A VS Code/Cursor workspace configuration is available in the parent `Projects/` directory for working with the template and generated clients together:
 
 1. Open the workspace:
+   > **Note:** The path `~/Projects` is an example. Adjust it to match your actual project directory structure.
    ```bash
    cd ~/Projects
    code openapi-clients-workspace.code-workspace
