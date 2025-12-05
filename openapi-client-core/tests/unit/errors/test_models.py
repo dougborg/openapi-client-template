@@ -157,3 +157,86 @@ def test_to_exception_message_empty():
     message = problem.to_exception_message()
 
     assert message == "Unknown API error"
+
+
+@pytest.mark.unit
+def test_from_response_json_decode_error():
+    """Test from_response handles JSON decode errors gracefully."""
+    # Create a response that will fail JSON parsing
+    response = Response(
+        status_code=400,
+        headers={"content-type": "application/json"},
+        text="invalid json{",
+    )
+
+    problem = ProblemDetail.from_response(response)
+
+    assert problem is None
+
+
+@pytest.mark.unit
+def test_from_response_missing_json_method():
+    """Test from_response handles responses without .json() method."""
+
+    # Create a mock response that doesn't have json() method
+    class MockResponse:
+        def __init__(self):
+            self.headers = {"content-type": "application/problem+json"}
+            self.status_code = 400
+
+        # No json() method
+
+    response = MockResponse()
+
+    problem = ProblemDetail.from_response(response)
+
+    assert problem is None
+
+
+@pytest.mark.unit
+def test_from_response_type_error():
+    """Test from_response handles TypeError from json() method."""
+
+    # Create a response that raises TypeError
+    class MockResponse:
+        def __init__(self):
+            self.headers = {"content-type": "application/problem+json"}
+            self.status_code = 400
+
+        def json(self):
+            raise TypeError("Not JSON serializable")
+
+    response = MockResponse()
+
+    problem = ProblemDetail.from_response(response)
+
+    assert problem is None
+
+
+@pytest.mark.unit
+def test_to_exception_message_title_equals_detail():
+    """Test to_exception_message doesn't duplicate when title equals detail."""
+    problem = ProblemDetail(
+        title="Error occurred",
+        detail="Error occurred",  # Same as title
+    )
+
+    message = problem.to_exception_message()
+
+    # Should only appear once
+    assert message.count("Error occurred") == 1
+
+
+@pytest.mark.unit
+def test_to_exception_message_with_extensions():
+    """Test to_exception_message includes extension fields."""
+    problem = ProblemDetail(
+        title="Error",
+        extensions={"error_code": "ERR001", "timestamp": "2025-01-01"},
+    )
+
+    message = problem.to_exception_message()
+
+    assert "Error" in message
+    assert "error_code" in message
+    assert "timestamp" in message

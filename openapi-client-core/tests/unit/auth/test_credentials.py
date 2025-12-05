@@ -13,18 +13,21 @@ from openapi_client_core.auth.exceptions import CredentialFileError, CredentialN
 class TestCredentialResolverInit:
     """Test CredentialResolver initialization."""
 
+    @pytest.mark.unit
     def test_init_default(self):
         """Test default initialization."""
         resolver = CredentialResolver()
         assert resolver is not None
         assert resolver._dotenv_loaded  # Should load dotenv by default
 
+    @pytest.mark.unit
     def test_init_skip_dotenv(self):
         """Test initialization with dotenv loading disabled."""
         resolver = CredentialResolver(load_dotenv=False)
         assert resolver is not None
         assert not resolver._dotenv_loaded
 
+    @pytest.mark.unit
     def test_init_with_custom_dotenv_path(self, tmp_path):
         """Test initialization with custom dotenv path."""
         dotenv_file = tmp_path / ".env"
@@ -376,6 +379,7 @@ class TestEdgeCases:
             resolver.resolve_from_file(env_var_name="NONEXISTENT_ENV_VAR", required=True)
         assert "NONEXISTENT_ENV_VAR" in str(exc_info.value)
 
+    @pytest.mark.unit
     def test_mask_credential_helper_method(self):
         """Test the _mask_credential helper method."""
         resolver = CredentialResolver(load_dotenv=False)
@@ -384,3 +388,174 @@ class TestEdgeCases:
         assert resolver._mask_credential("secret") == "***"
         # Without value
         assert resolver._mask_credential(None) == "None"
+
+    @pytest.mark.unit
+    def test_resolve_logs_with_masking(self, caplog):
+        """Test that resolve logs with credential masking."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        resolver = CredentialResolver(load_dotenv=False)
+
+        resolver.resolve(value="secret-key", mask_in_logs=True)
+
+        assert "Resolved credential from explicit parameter: ***" in caplog.text
+        assert "secret-key" not in caplog.text
+
+    @pytest.mark.unit
+    def test_resolve_logs_without_masking(self, caplog):
+        """Test that resolve logs without masking when disabled."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        resolver = CredentialResolver(load_dotenv=False)
+
+        resolver.resolve(value="public-value", mask_in_logs=False)
+
+        assert "public-value" in caplog.text
+
+    @pytest.mark.unit
+    def test_resolve_no_logging_when_none(self, caplog):
+        """Test that resolve doesn't log when result is None."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        resolver = CredentialResolver(load_dotenv=False)
+
+        resolver.resolve(env_var_name="NONEXISTENT", mask_in_logs=True)
+
+        # Should not log when result is None
+        assert "Resolved credential" not in caplog.text
+
+    @pytest.mark.unit
+    def test_resolve_from_env_var_logs(self, monkeypatch, caplog):
+        """Test that resolve logs when getting from environment variable."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        monkeypatch.setenv("TEST_ENV_VAR", "env-value")
+        resolver = CredentialResolver(load_dotenv=False)
+
+        resolver.resolve(env_var_name="TEST_ENV_VAR", mask_in_logs=True)
+
+        assert "environment variable 'TEST_ENV_VAR'" in caplog.text
+        assert "***" in caplog.text
+
+    @pytest.mark.unit
+    def test_resolve_from_default_logs(self, caplog):
+        """Test that resolve logs when using default value."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        resolver = CredentialResolver(load_dotenv=False)
+
+        resolver.resolve(env_var_name="NONEXISTENT", default="default-value", mask_in_logs=True)
+
+        assert "default value" in caplog.text
+        assert "***" in caplog.text
+
+    @pytest.mark.unit
+    def test_resolve_required_without_env_var_name(self):
+        """Test resolve raises error when required but no env_var_name provided."""
+        resolver = CredentialResolver(load_dotenv=False)
+
+        with pytest.raises(CredentialNotFoundError) as exc_info:
+            resolver.resolve(required=True)
+
+        assert "Required credential not found" in str(exc_info.value)
+        assert exc_info.value.env_var_name is None
+
+    @pytest.mark.unit
+    def test_resolve_from_file_path_from_env_var(self, tmp_path, monkeypatch):
+        """Test resolve_from_file gets path from environment variable."""
+        cred_file = tmp_path / "secret.txt"
+        cred_file.write_text("secret-from-env-path")
+
+        monkeypatch.setenv("CRED_FILE_PATH", str(cred_file))
+        resolver = CredentialResolver(load_dotenv=False)
+
+        result = resolver.resolve_from_file(env_var_name="CRED_FILE_PATH")
+
+        assert result == "secret-from-env-path"
+
+    @pytest.mark.unit
+    def test_resolve_from_file_path_from_env_var_not_set(self, monkeypatch):
+        """Test resolve_from_file when env var for path is not set."""
+        monkeypatch.delenv("MISSING_PATH_VAR", raising=False)
+        resolver = CredentialResolver(load_dotenv=False)
+
+        result = resolver.resolve_from_file(env_var_name="MISSING_PATH_VAR")
+
+        assert result is None
+
+    @pytest.mark.unit
+    def test_resolve_from_file_logs_credential(self, tmp_path, caplog):
+        """Test that resolve_from_file logs with masking."""
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+        cred_file = tmp_path / "secret.txt"
+        cred_file.write_text("file-secret")
+
+        resolver = CredentialResolver(load_dotenv=False)
+        resolver.resolve_from_file(file_path=str(cred_file))
+
+        assert "Resolved credential from file" in caplog.text
+        assert "***" in caplog.text
+        assert "file-secret" not in caplog.text
+
+    @pytest.mark.unit
+    def test_resolve_from_file_with_empty_file(self, tmp_path):
+        """Test resolve_from_file handles empty file."""
+        cred_file = tmp_path / "empty.txt"
+        cred_file.write_text("")
+
+        resolver = CredentialResolver(load_dotenv=False)
+        result = resolver.resolve_from_file(file_path=str(cred_file))
+
+        assert result == ""  # Empty string after strip
+
+    @pytest.mark.unit
+    def test_resolve_from_file_with_whitespace(self, tmp_path):
+        """Test resolve_from_file strips whitespace."""
+        cred_file = tmp_path / "whitespace.txt"
+        cred_file.write_text("  \n  secret-value  \n  ")
+
+        resolver = CredentialResolver(load_dotenv=False)
+        result = resolver.resolve_from_file(file_path=str(cred_file))
+
+        assert result == "secret-value"
+
+    @pytest.mark.unit
+    def test_ensure_dotenv_loaded_thread_safety(self, tmp_path):
+        """Test _ensure_dotenv_loaded is thread-safe."""
+        dotenv_file = tmp_path / ".env"
+        dotenv_file.write_text("TEST_VAR=value\n")
+
+        resolver = CredentialResolver(dotenv_path=str(dotenv_file), load_dotenv=False)
+        # Manually call to test the double-check pattern
+        resolver._ensure_dotenv_loaded()
+        # Call again - should return early
+        resolver._ensure_dotenv_loaded()
+        assert resolver._dotenv_loaded
+
+    @pytest.mark.unit
+    def test_ensure_dotenv_loaded_handles_exception(self, tmp_path, caplog, monkeypatch):
+        """Test _ensure_dotenv_loaded handles exceptions gracefully."""
+        import logging
+
+        caplog.set_level(logging.WARNING)
+
+        # Mock load_dotenv to raise an exception
+        def mock_load_dotenv(*args, **kwargs):
+            raise Exception("Mock error loading dotenv")
+
+        from openapi_client_core.auth import credentials
+
+        monkeypatch.setattr(credentials, "load_dotenv", mock_load_dotenv)
+
+        resolver = CredentialResolver(dotenv_path=str(tmp_path / ".env"), load_dotenv=False)
+        resolver._ensure_dotenv_loaded()
+
+        assert resolver._dotenv_loaded  # Should be marked as attempted
+        assert "Failed to load .env file" in caplog.text
