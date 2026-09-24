@@ -24,7 +24,13 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "copier>=9.7.0",
+    # Copier 9.15.2 deprecated rendering the answers file from a non-root
+    # directory and now writes it at the destination root. This template
+    # renders the project into a {{project_slug}}/ subdirectory, so newer
+    # Copier leaves generated projects without .copier-answers.yml and
+    # `copier update` stops working. Keep below 9.15.2 until the template
+    # renders at the destination root.
+    "copier>=9.7.0,<9.15.2",
 ]
 
 [project.optional-dependencies]
