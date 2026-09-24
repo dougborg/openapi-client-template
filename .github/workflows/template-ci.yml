@@ -24,16 +24,22 @@ jobs:
       - name: Install UV
         uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
 
-      - name: Install dependencies
-        run: uv pip install --system copier pytest ruff
+      # Copier comes from uv.lock, not a floating install: the template depends
+      # on answers-file behaviour that Copier changed in 9.15.2 (see the
+      # comment on the copier dependency in pyproject.toml).
+      - name: Install locked Copier
+        run: uv sync --locked
+
+      - name: Install test tools
+        run: uv pip install --system pytest ruff
 
       - name: Test template generation with default values
         run: |
-          copier copy --trust --defaults . /tmp/test-project-default
+          uv run --locked copier copy --trust --defaults . /tmp/test-project-default
 
       - name: Test template generation with custom values
         run: |
-          copier copy --trust --defaults . /tmp/test-project-custom \
+          uv run --locked copier copy --trust --defaults . /tmp/test-project-custom \
             --data project_name="Test Client" \
             --data project_slug="test-client" \
             --data package_name="test_client" \
@@ -105,12 +111,12 @@ jobs:
       - name: Install UV
         uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
 
-      - name: Install dependencies
-        run: uv pip install --system copier
+      - name: Install locked Copier
+        run: uv sync --locked
 
       - name: Create test project
         run: |
-          copier copy --trust --defaults . /tmp/sync-test-project
+          uv run --locked copier copy --trust --defaults . /tmp/sync-test-project
 
       - name: Verify copier answers file exists
         run: |
@@ -127,5 +133,5 @@ jobs:
           # that doesn't exist in the actual branch. We're just testing that the
           # script executes and the answers file is properly formatted.
           # In real usage, users will be updating from actual template commits.
-          python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust 2>&1 || true
+          uv run --locked python scripts/sync-template.py /tmp/sync-test-project/my-openapi-client --trust 2>&1 || true
           echo "Sync script test completed (exit code $? - may fail in CI due to merge commit)"
